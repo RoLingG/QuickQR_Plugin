@@ -1,0 +1,51 @@
+{
+  "name": "quick-qr",
+  "displayName": "Quick qr",
+  "version": "0.1.0",
+  "description": "Generate QR codes and Crap a QR Code to scan instantly",
+  "author": "RoLingG",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
+  },
+  "dependencies": {
+    "@plasmohq/storage": "^1.15.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/uuid": "^11.0.0",
+    "jsqr": "^1.4.0",
+    "qrcode": "^1.5.4",
+    "qrcode.vue": "^3.6.0",
+    "uuid": "^13.0.0",
+    "vue": "3.4.15"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "4.1.1",
+    "@types/chrome": "^0.0.258",
+    "@types/node": "20.11.5",
+    "autoprefixer": "^10.4.23",
+    "crypto-browserify": "^3.12.1",
+    "plasmo": "^0.90.5",
+    "postcss": "^8.5.6",
+    "prettier": "3.2.4",
+    "tailwindcss": "^3.4.19",
+    "typescript": "5.3.3"
+  },
+  "manifest": {
+    "host_permissions": [
+      "<all_urls>"
+    ],
+    "permissions": [
+      "activeTab",
+      "contextMenus",
+      "sidePanel",
+      "scripting"
+    ],
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "side_panel": {
+      "default_path": "sidepanel.html"
+    }
+  }
+}
