@@ -4,6 +4,8 @@
 
 **QuickQR** 是一款风格独特的 Chrome 浏览器侧边栏扩展（Sidepanel Extension）。它被设计为二维码处理的“数字瑞士军刀”，结合了复古杂志风（Retro Magazine UI）的视觉体验与强大的实用功能。
 
+![qr3](https://rolingg.top/images/quickQR/qrGithub.png)
+
 ## ✨ 主要功能 (Features)
 
 QuickQR 通过侧边栏 (Sidepanel) 提供一站式服务，主要包含三大核心模块：
