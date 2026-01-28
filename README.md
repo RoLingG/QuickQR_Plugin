@@ -1,6 +1,6 @@
 # QuickQR - Chrome 扩展程序
 
-![Plasmo](https://img.shields.io/badge/Framework-Plasmo-blue?style=flat-square)![Vue](https://img.shields.io/badge/Vue-3.0-green?style=flat-square)![Node](https://img.shields.io/badge/Node-20.22-green?style=flat-square)
+![Plasmo](https://img.shields.io/badge/Framework-Plasmo-blue?style=flat-square) ![Vue](https://img.shields.io/badge/Vue-3.0-green?style=flat-square) ![Node](https://img.shields.io/badge/Node-20.22-green?style=flat-square)
 
 **QuickQR** 是一款风格独特的 Chrome 浏览器侧边栏扩展（Sidepanel Extension）。它被设计为二维码处理的“数字瑞士军刀”，结合了复古杂志风（Retro Magazine UI）的视觉体验与强大的实用功能。
 
