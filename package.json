@@ -1,7 +1,7 @@
 {
   "name": "quick-qr",
   "displayName": "Quick qr",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Generate QR codes and Crap a QR Code to scan instantly",
   "author": "RoLingG",
   "scripts": {

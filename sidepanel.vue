@@ -3,7 +3,7 @@
     <header class="header">
       <div class="logo-row">
         <h1 class="brand">Quick<span class="highlight">QR</span></h1>
-        <span class="badge">VOL.01</span>
+        <span class="badge">VOL.02</span>
       </div>
       <p class="subtitle">Your digital Swiss Army Knife for QR codes</p>
     </header>
