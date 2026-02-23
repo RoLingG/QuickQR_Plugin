@@ -12,7 +12,7 @@
 <script lang="ts">
 import type { PlasmoCSConfig } from "plasmo"
 
-// 1. Plasmo 配置：注入到所有页面
+// Plasmo 配置：注入到所有页面
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"]
 }
@@ -27,7 +27,7 @@ const isDragging = ref(false)
 const startPos = ref<{ x: number, y: number } | null>(null)
 const currentPos = ref<{ x: number, y: number } | null>(null)
 
-// 2. 监听来自 sidePanel 的消息
+// 监听来自 sidePanel 的消息
 onMounted(() => {
   chrome.runtime.onMessage.addListener(messageListener)
 })
@@ -43,7 +43,7 @@ const messageListener = (msg: any) => {
   }
 }
 
-// 3. 鼠标交互逻辑
+// 鼠标交互逻辑
 const handleMouseDown = (e: MouseEvent) => {
   e.preventDefault()
   isDragging.value = true
@@ -94,7 +94,7 @@ const reset = () => {
   document.body.style.cursor = "default"
 }
 
-// 4. 计算属性：动态计算选区的 CSS
+// 计算属性：动态计算选区的 CSS
 const boxStyle = computed(() => {
   if (!startPos.value || !currentPos.value) return null
 

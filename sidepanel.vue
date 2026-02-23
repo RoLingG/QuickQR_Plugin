@@ -8,7 +8,7 @@
       <p class="subtitle">Your digital Swiss Army Knife for QR codes</p>
     </header>
 
-    <!-- 顶部 Tab 切换栏 (增加 FILE) -->
+    <!-- 顶部 Tab 切换栏 -->
     <div class="tab-group">
       <button
           class="tab-btn"
@@ -31,7 +31,7 @@
     </div>
 
     <main class="content">
-      <!-- ================= 1. SCAN 功能区域 ================= -->
+      <!-- ================= SCAN 功能区域 ================= -->
       <div v-if="activeTab === 'scan'" class="tab-content">
         <div class="card-wrapper">
           <button
@@ -58,20 +58,32 @@
           <div class="line"></div>
         </div>
 
-        <!-- 复用结果展示组件 -->
-        <div v-if="qrResult" class="result-section">
-          <div class="result-header">
-            <h3>Result.</h3>
-            <button @click="copyToClipboard(qrResult)" class="copy-link">{{ copyText }}</button>
+        <!-- 自动跳转开关 -->
+        <div class="settings-row">
+          <div class="setting-item">
+            <span class="setting-label">Auto Jump to URL</span>
+            <button
+              @click="toggleAutoJumpScan"
+              class="toggle-btn"
+              :class="{ 'active': autoJumpEnabledScan }">
+              <span class="toggle-slider"></span>
+            </button>
           </div>
-          <div class="result-card">
-            <textarea readonly class="result-content">{{ qrResult }}</textarea>
-            <div class="result-footer">
-              <span>TYPE: SCREEN</span>
-              <span>{{ new Date().toLocaleTimeString() }}</span>
-            </div>
-          </div>
+          <p class="setting-hint">When enabled, automatically open URL in new tab after scanning</p>
         </div>
+
+        <!-- 复用结果展示组件 -->
+        <ResultSection
+          v-if="qrResult"
+          :qr-result="qrResult"
+          type="SCAN"
+          :url-security-warnings="urlSecurityWarnings"
+          :url-risk-level="urlRiskLevel"
+          :copy-text="copyText"
+          :show-open-url="isValidUrl(qrResult)"
+          @open-url="openUrl"
+          @copy-text="copyToClipboard(qrResult)"
+        />
 
         <div v-else class="empty-state">
           <div class="quote-mark">”</div>
@@ -79,7 +91,7 @@
         </div>
       </div>
 
-      <!-- ================= 2. FILE 功能区域 (新增) ================= -->
+      <!-- ================= FILE 功能区域 ================= -->
       <div v-else-if="activeTab === 'file'" class="tab-content fade-in">
         <div class="drop-zone-wrapper"
             @dragover.prevent="isDragging = true"
@@ -107,19 +119,32 @@
           <span class="status-text">{{ status }}</span>
           <div class="line"></div>
         </div>
-        <div v-if="qrResult" class="result-section">
-          <div class="result-header">
-            <h3>Result.</h3>
-            <button @click="copyToClipboard(qrResult)" class="copy-link">{{ copyText }}</button>
+
+        <!-- 自动跳转开关 -->
+        <div class="settings-row">
+          <div class="setting-item">
+            <span class="setting-label">Auto Jump to URL</span>
+            <button
+              @click="toggleAutoJumpFile"
+              class="toggle-btn"
+              :class="{ 'active': autoJumpEnabledFile }">
+              <span class="toggle-slider"></span>
+            </button>
           </div>
-          <div class="result-card">
-            <textarea readonly class="result-content">{{ qrResult }}</textarea>
-            <div class="result-footer">
-              <span>TYPE: FILE</span>
-              <span>{{ new Date().toLocaleTimeString() }}</span>
-            </div>
-          </div>
+          <p class="setting-hint">When enabled, automatically open URL in new tab after scanning</p>
         </div>
+
+        <ResultSection
+          v-if="qrResult"
+          :qr-result="qrResult"
+          type="FILE"
+          :url-security-warnings="urlSecurityWarnings"
+          :url-risk-level="urlRiskLevel"
+          :copy-text="copyText"
+          :show-open-url="isValidUrl(qrResult)"
+          @open-url="openUrl"
+          @copy-text="copyToClipboard(qrResult)"
+        />
 
         <div v-else class="empty-state">
           <div class="quote-mark">Folder</div>
@@ -127,7 +152,7 @@
         </div>
       </div>
 
-      <!-- ================= 3. MAKE 功能区域 ================= -->
+      <!-- ================= MAKE 功能区域 ================= -->
       <div v-else class="tab-content fade-in">
         <div class="input-section">
           <label class="section-label">INPUT CONTENT</label>
@@ -165,6 +190,7 @@ import { ref, onMounted, onUnmounted } from "vue"
 import jsQR from "jsqr"
 import QrcodeVue from "qrcode.vue"
 import screenCutUrl from './assets/screen_cut.svg'
+import ResultSection from './components/sidepanel-result-section.vue'
 
 const activeTab = ref<'scan' | 'file' | 'make'>('scan')
 const status = ref("Ready")
@@ -175,6 +201,10 @@ const isCropping = ref(false)
 const isDragging = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const genText = ref("")
+const autoJumpEnabledScan = ref(false) // SCAN 标签页自动跳转开关
+const autoJumpEnabledFile = ref(false) // FILE 标签页自动跳转开关
+const urlSecurityWarnings = ref<string[]>([]) // URL 安全警告
+const urlRiskLevel = ref<'low' | 'medium' | 'high'>('low') // URL 风险等级
 
 const switchTab = (tab: 'scan' | 'file' | 'make') => {
   activeTab.value = tab
@@ -182,6 +212,8 @@ const switchTab = (tab: 'scan' | 'file' | 'make') => {
   status.value = "Ready"
   qrResult.value = ""
   isProcessing.value = false
+  urlSecurityWarnings.value = []
+  urlRiskLevel.value = 'low'
 }
 
 const handleMessage = (message: any) => {
@@ -207,6 +239,12 @@ const copyToClipboard = (text: string) => {
   setTimeout(() => copyText.value = "COPY TEXT", 2000)
 }
 
+const openUrl = () => {
+  if (qrResult.value && isValidUrl(qrResult.value)) {
+    chrome.tabs.create({ url: qrResult.value })
+  }
+}
+
 const startCrop = async () => {
   try {
     isCropping.value = true
@@ -230,7 +268,7 @@ const processCrop = (area: any) => {
     if (!dataUrl) {
       status.value = "Capture Failed"; isProcessing.value = false; return
     }
-    scanImageFromUrl(dataUrl, area)
+    scanImageFromUrl(dataUrl, area, 'scan')
   })
 }
 
@@ -241,7 +279,7 @@ const handleImageScan = (url: string) => {
   scanImageFromUrl(url, null)
 }
 
-// --- Logic 2: Local File (新增) ---
+// --- Local File ---
 const triggerFileInput = () => fileInputRef.value?.click()
 
 const handleFileSelect = (event: Event) => {
@@ -274,7 +312,7 @@ const processLocalFile = (file: File) => {
   reader.onload = (e) => {
     if (e.target?.result) {
       // 直接复用已有的核心扫描函数！
-      scanImageFromUrl(e.target.result as string, null)
+      scanImageFromUrl(e.target.result as string, null, 'file')
     }
   }
   reader.onerror = () => {
@@ -284,7 +322,7 @@ const processLocalFile = (file: File) => {
   reader.readAsDataURL(file)
 }
 
-const scanImageFromUrl = (url: string, cropArea: any = null) => {
+const scanImageFromUrl = (url: string, cropArea: any = null, source: 'scan' | 'file' = 'scan') => {
   const image = new Image()
   image.crossOrigin = "Anonymous"
 
@@ -310,6 +348,42 @@ const scanImageFromUrl = (url: string, cropArea: any = null) => {
     if (code) {
       qrResult.value = code.data
       status.value = "Scan Complete"
+
+      // 如果结果是 URL，进行安全检查
+      if (isValidUrl(code.data)) {
+        const securityCheck = checkUrlSecurity(code.data)
+        urlSecurityWarnings.value = securityCheck.warnings
+        urlRiskLevel.value = securityCheck.riskLevel
+
+        // 根据来源选择对应的开关
+        const autoJumpEnabled = source === 'scan' ? autoJumpEnabledScan.value : autoJumpEnabledFile.value
+
+        // 如果开关打开，根据风险等级决定是否跳转
+        if (autoJumpEnabled) {
+          // 高风险 URL：阻止自动跳转
+          if (securityCheck.riskLevel === 'high') {
+            status.value = "⚠️ High-risk URL detected - Auto-jump blocked"
+            return
+          }
+
+          // 中低风险：显示确认对话框
+          const warningText = securityCheck.warnings.length > 0
+            ? '\n\nSecurity warnings:\n' + securityCheck.warnings.join('\n')
+            : ''
+
+          const confirmed = confirm(
+            `Auto-jump is enabled. Open this URL in a new tab?\n\n${code.data}${warningText}\n\nClick OK to open, Cancel to stay.`
+          )
+
+          if (confirmed) {
+            chrome.tabs.create({ url: code.data })
+          }
+        }
+      } else {
+        // 清空之前的警告
+        urlSecurityWarnings.value = []
+        urlRiskLevel.value = 'low'
+      }
     } else {
       status.value = "No QR Code Found"
     }
@@ -321,9 +395,167 @@ const scanImageFromUrl = (url: string, cropArea: any = null) => {
   image.src = url
 }
 
+// 判断是否为有效 URL
+const isValidUrl = (str: string): boolean => {
+  try {
+    const url = new URL(str)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+// URL 安全检查
+interface SecurityCheck {
+  isSafe: boolean
+  warnings: string[]
+  riskLevel: 'low' | 'medium' | 'high'
+}
+
+// 检查 URL 安全性
+const checkUrlSecurity = (urlString: string): SecurityCheck => {
+  const warnings: string[] = []
+  let riskLevel: 'low' | 'medium' | 'high' = 'low'
+
+  try {
+    const url = new URL(urlString)
+
+    // 检查 HTTP vs HTTPS
+    if (url.protocol === 'http:') {
+      warnings.push('⚠️ URL uses insecure HTTP protocol (not HTTPS)')
+      if (riskLevel === 'low') riskLevel = 'medium'
+    }
+
+    // 检查是否使用 IP 地址而非域名
+    const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/
+    if (ipPattern.test(url.hostname)) {
+      warnings.push('⚠️ URL uses IP address instead of domain name')
+      if (riskLevel === 'low') riskLevel = 'medium'
+    }
+
+    // 检查 URL 长度（钓鱼网站常用超长 URL 混淆）
+    if (urlString.length > 200) {
+      warnings.push('⚠️ URL is unusually long')
+      if (riskLevel === 'low') riskLevel = 'medium'
+    }
+
+    // 检查可疑的顶级域名
+    const suspiciousTlds = ['.tk', '.ml', '.ga', '.cf', '.gq', '.xyz', '.top', '.work']
+    if (suspiciousTlds.some(tld => url.hostname.endsWith(tld))) {
+      warnings.push('⚠️ Domain uses a high-risk TLD')
+      if (riskLevel === 'low') riskLevel = 'medium'
+    }
+
+    // 检查域名中是否有过多的子域名（可能是钓鱼）
+    const subdomains = url.hostname.split('.')
+    if (subdomains.length > 4) {
+      warnings.push('⚠️ URL has many subdomains')
+      if (riskLevel === 'low') riskLevel = 'medium'
+    }
+
+    // 检查是否包含常见的钓鱼关键词
+    const phishingKeywords = ['login', 'signin', 'account', 'verify', 'secure', 'update', 'confirm']
+    const pathAndQuery = url.pathname + url.search
+    const hasPhishingKeyword = phishingKeywords.some(keyword =>
+        pathAndQuery.toLowerCase().includes(keyword)
+    )
+    if (hasPhishingKeyword && !url.hostname.includes('google') && !url.hostname.includes('microsoft')) {
+      warnings.push('⚠️ URL contains authentication-related keywords')
+      if (riskLevel === 'low') riskLevel = 'medium'
+    }
+
+    // 检查是否使用非标准端口
+    if (url.port && url.port !== '80' && url.port !== '443') {
+      warnings.push('⚠️ URL uses non-standard port')
+      if (riskLevel === 'low') riskLevel = 'medium'
+    }
+
+    // 检测同形字攻击（数字/字母混淆）
+    const homographPatterns = [
+      { pattern: /[0oO]{2,}/, desc: 'contains confusing O/0 characters' },
+      { pattern: /[1lI]{2,}/, desc: 'contains confusing 1/l/I characters' },
+      { pattern: /[5S]{2,}/, desc: 'contains confusing 5/S characters' },
+      { pattern: /rn/g, desc: 'contains "rn" that looks like "m"' }
+    ]
+
+    for (const { pattern, desc } of homographPatterns) {
+      if (pattern.test(url.hostname)) {
+        warnings.push(`⚠️ Domain ${desc} (possible homograph attack)`)
+        if (riskLevel === 'low') riskLevel = 'medium'
+        break
+      }
+    }
+
+    // 检测短链接服务
+    const shortLinkDomains = ['bit.ly', 'tinyurl.com', 't.co', 'goo.gl', 'ow.ly', 'is.gd', 'buff.ly', 'adf.ly', 'short.link']
+    if (shortLinkDomains.some(domain => url.hostname === domain || url.hostname.endsWith('.' + domain))) {
+      warnings.push('⚠️ URL is a short link (cannot verify final destination)')
+      if (riskLevel === 'low') riskLevel = 'medium'
+    }
+
+    // 检测常见品牌钓鱼
+    const brandKeywords = ['paypal', 'amazon', 'apple', 'microsoft', 'google', 'facebook', 'instagram', 'twitter', 'netflix', 'bank', 'visa', 'mastercard']
+    const officialDomains = ['paypal.com', 'amazon.com', 'apple.com', 'microsoft.com', 'google.com', 'facebook.com', 'instagram.com', 'twitter.com', 'netflix.com']
+
+    const hostname = url.hostname.toLowerCase()
+    const hasBrandKeyword = brandKeywords.some(brand => hostname.includes(brand))
+    const isOfficialDomain = officialDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain))
+
+    if (hasBrandKeyword && !isOfficialDomain) {
+      warnings.push('🚨 Domain contains brand name but is not official (possible phishing)')
+      riskLevel = 'high'
+    }
+
+    // 检查是否包含多个 @ 符号（常见钓鱼手法）
+    if ((urlString.match(/@/g) || []).length > 1) {
+      warnings.push('🚨 URL contains multiple @ symbols (phishing indicator)')
+      riskLevel = 'high'
+    }
+
+    // 检查是否包含 URL 编码的特殊字符（可能隐藏恶意内容）
+    if (urlString.includes('%00') || urlString.includes('%0d') || urlString.includes('%0a')) {
+      warnings.push('🚨 URL contains suspicious encoded characters')
+      riskLevel = 'high'
+    }
+
+    return {
+      isSafe: riskLevel !== 'high',
+      warnings,
+      riskLevel
+    }
+  } catch {
+    return {
+      isSafe: false,
+      warnings: ['🚨 Invalid URL format'],
+      riskLevel: 'high'
+    }
+  }
+}
+
+// 切换 SCAN 标签页自动跳转开关
+const toggleAutoJumpScan = () => {
+  autoJumpEnabledScan.value = !autoJumpEnabledScan.value
+  chrome.storage.local.set({ autoJumpEnabledScan: autoJumpEnabledScan.value })
+}
+
+// 切换 FILE 标签页自动跳转开关
+const toggleAutoJumpFile = () => {
+  autoJumpEnabledFile.value = !autoJumpEnabledFile.value
+  chrome.storage.local.set({ autoJumpEnabledFile: autoJumpEnabledFile.value })
+}
+
 // --- Lifecycle ---
 onMounted(() => {
   chrome.runtime.onMessage.addListener(handleMessage)
+  // 加载保存的开关状态
+  chrome.storage.local.get(['autoJumpEnabledScan', 'autoJumpEnabledFile'], (result) => {
+    if (result.autoJumpEnabledScan !== undefined) {
+      autoJumpEnabledScan.value = result.autoJumpEnabledScan
+    }
+    if (result.autoJumpEnabledFile !== undefined) {
+      autoJumpEnabledFile.value = result.autoJumpEnabledFile
+    }
+  })
 })
 onUnmounted(() => {
   chrome.runtime.onMessage.removeListener(handleMessage)
@@ -409,6 +641,64 @@ onUnmounted(() => {
 .line { flex: 1; height: 2px; background-color: var(--border-color); }
 .status-text { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--bg-color); background: var(--border-color); padding: 2px 6px; }
 
+/* === 设置开关样式 === */
+.settings-row {
+  background: white;
+  border: 2px solid var(--border-color);
+  padding: 12px 16px;
+  border-left: 4px solid var(--rh-primary);
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.setting-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.setting-hint {
+  margin: 6px 0 0 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.toggle-btn {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #d1d5db;
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.toggle-btn.active {
+  background: var(--rh-primary);
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border: 2px solid var(--border-color);
+  transition: transform 0.2s;
+}
+
+.toggle-btn.active .toggle-slider {
+  transform: translateX(20px);
+}
+
 /* === MAKE 样式 === */
 .input-section { display: flex; flex-direction: column; gap: 8px; }
 .section-label { font-size: 10px; font-weight: 800; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
@@ -419,14 +709,6 @@ onUnmounted(() => {
 @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .qr-frame { background: white; padding: 16px; border: 3px solid var(--text-primary); box-shadow: 8px 8px 0 var(--rh-accent); }
 .qr-caption { font-size: 10px; color: var(--text-secondary); letter-spacing: 2px; margin: 0; }
-
-/* === 结果通用样式 === */
-.result-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
-.result-header h3 { font-size: 16px; font-weight: 800; margin: 0; }
-.copy-link { background: none; border: none; font-family: inherit; font-size: 10px; font-weight: 800; color: var(--accent-color); cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
-.result-card { background: white; border: 2px solid var(--border-color); padding: 16px; border-left: 6px solid var(--rh-accent); box-shadow: 4px 4px 0 rgba(0,0,0,0.1); }
-.result-content { width: 100%; border: none; resize: none; font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text-primary); outline: none; height: auto; min-height: 60px; }
-.result-footer { margin-top: 12px; padding-top: 12px; border-top: 2px dashed #ccc; display: flex; justify-content: space-between; font-size: 10px; color: var(--text-secondary); }
 
 .empty-state { text-align: center; margin-top: 20px; }
 .quote-mark { font-size: 40px; line-height: 1; color: var(--rh-dim); font-weight: 900; }

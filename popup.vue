@@ -9,7 +9,7 @@
     </header>
 
     <main class="content">
-      <!-- 1. 二维码展示区 -->
+      <!-- 二维码展示区 -->
       <div class="frame-wrapper">
         <div class="qr-frame">
           <canvas v-show="text" ref="canvasRef" class="qr-canvas"></canvas>
@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <!-- 4. 操作按钮 -->
+      <!-- 操作按钮 -->
       <div class="actions">
         <button @click="download('png')" class="btn primary-btn">
           <span>SAVE PNG</span>
@@ -79,7 +79,7 @@
     </main>
 
     <footer class="footer">
-      Vol.01 — Presented by RoLingG & Gemini
+      Vol.02 — Presented by RoLingG & Gemini
     </footer>
   </div>
 </template>
@@ -90,11 +90,11 @@ import { generateQRToCanvas } from '~/lib/generator'
 import screenCutUrl from './assets/screen_cut.svg'
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
-const fileInputRef = ref<HTMLInputElement | null>(null) // 新增：文件输入框引用
+const fileInputRef = ref<HTMLInputElement | null>(null) // 文件输入框引用
 const text = ref('')
 const fgColor = ref('#1c1917')
 const bgColor = ref('#ffffff')
-const logoSrc = ref<string | null>(null) // 新增：存储Logo数据
+const logoSrc = ref<string | null>(null) // 存储Logo数据
 
 // 初始化
 onMounted(() => {
