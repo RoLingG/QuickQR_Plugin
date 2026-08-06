@@ -1,85 +1,87 @@
-# QuickQR - Chrome 扩展程序
+# QuickQR - Chrome Extension
+
+**English** | [简体中文](readme/README_zh.md) | [繁體中文](readme/README_zh-TW.md)
 
 ![Plasmo](https://img.shields.io/badge/Framework-Plasmo-blue?style=flat-square) ![Vue](https://img.shields.io/badge/Vue-3.0-green?style=flat-square) ![Node](https://img.shields.io/badge/Node-20.22-green?style=flat-square) ![Security](https://img.shields.io/badge/Security-Enhanced-red?style=flat-square)
 
-**QuickQR** 是一款风格独特的 Chrome 浏览器侧边栏扩展（Sidepanel Extension）。它被设计为二维码处理的”数字瑞士军刀”，结合了复古杂志风（Retro Magazine UI）的视觉体验与强大的实用功能，并内置了**智能安全检查系统**，保护用户免受恶意二维码的威胁。
+**QuickQR** is a Chrome Sidepanel Extension with a distinctive retro magazine aesthetic. Designed as a "digital Swiss Army knife" for QR code processing, it combines a vintage editorial UI with powerful utility features and a built-in **intelligent security scanning system** to protect users from malicious QR codes.
 
 ![qr3](https://rolingg.top/images/quickQR/qrGithub.png)
 
-## ✨ 主要功能 (Features)
+## Features
 
-QuickQR 通过侧边栏 (Sidepanel) 提供一站式服务，主要包含三大核心模块：
+QuickQR provides an all-in-one QR code toolkit through its browser sidepanel, organized into three core modules:
 
-### 1. 📷 屏幕截图扫码 (SCAN) ⭐️
+### 1. Screen Capture Scan (SCAN)
 
-- **交互式截图**：点击按钮后，在当前网页上自由框选区域。
-- **自动识别**：扩展自动捕获选区并解析其中的二维码内容。
-- **右键菜单集成**：直接在网页图片上点击右键 -> `QuickQR: 识别图中二维码`，立即在侧边栏显示结果。
-- **智能安全检查**：自动检测 URL 风险，保护用户安全。
-- **可选自动跳转**：开启开关后，扫描到 URL 自动在新标签页打开（安全检查通过后）。
+- **Interactive Screenshot**: Click the button and freely select any area on the current webpage to capture.
+- **Auto Recognition**: Automatically extracts and decodes QR codes from the captured region.
+- **Right-Click Integration**: Right-click any image on a webpage → `QuickQR: Decode QR from Image` → results appear instantly in the sidepanel.
+- **Smart Security Check**: Automatically scans decoded URLs for potential risks.
+- **Optional Auto-Navigate**: When enabled, safely opens decoded URLs in a new tab (after passing security checks).
 
-### 2. 📂 本地图片解码 (FILE) ⭐️
+### 2. Local Image Decode (FILE)
 
-- **拖拽上传**：支持将电脑本地文件夹中的二维码图片直接拖入侧边栏。
-- **点击上传**：点击虚线区域选择文件，快速解析本地资源。
-- **独立安全控制**：FILE 标签页拥有独立的自动跳转开关，与 SCAN 互不影响。
+- **Drag & Drop**: Drag QR code images from your local file manager directly into the sidepanel.
+- **Click to Upload**: Click the upload zone to browse and select files for quick decoding.
+- **Independent Security Control**: The FILE tab has its own auto-navigate toggle, separate from SCAN.
 
-### 3. 🛠️ 二维码生成 (MAKE) ⭐️
+### 3. QR Code Generation (MAKE)
 
-- **文本转码**：输入任意文本或链接，实时生成矢量级二维码。
-- **右键生成**：选中网页上的文字 -> 右键 -> `QuickQR: 为选中文字生成二维码`，直接跳转并生成。
+- **Text to Code**: Enter any text or URL to generate a high-quality QR code in real time.
+- **Right-Click Generate**: Select text on any webpage → right-click → `QuickQR: Generate QR for Selected Text` → instantly generates the QR code.
 
-### 4. 🛡️ 安全防护系统 (Security) 🆕
+### 4. Security Protection System (Security)
 
-QuickQR 内置了**12 项安全检查规则**，全方位保护用户免受恶意二维码威胁：
+QuickQR comes with **12 security check rules** that comprehensively protect users from malicious QR code threats:
 
-#### 基础安全检查
-- ✅ **HTTP/HTTPS 检测**：标记不安全的 HTTP 连接
-- ✅ **IP 地址检测**：识别使用 IP 而非域名的可疑 URL
-- ✅ **超长 URL 检测**：检测钓鱼网站常用的超长 URL
-- ✅ **高风险 TLD 检测**：识别 .tk、.ml、.ga 等免费高风险域名
-- ✅ **非标准端口检测**：标记使用非 80/443 端口的 URL
+#### Basic Security Checks
+- **HTTP/HTTPS Detection**: Flags unsecured HTTP connections.
+- **IP Address Detection**: Identifies suspicious URLs using raw IPs instead of domain names.
+- **Oversized URL Detection**: Flags abnormally long URLs commonly used in phishing attacks.
+- **High-Risk TLD Detection**: Identifies free high-risk domains (.tk, .ml, .ga, etc.).
+- **Non-Standard Port Detection**: Flags URLs using ports other than 80/443.
 
-#### 高级威胁检测
-- ✅ **同形字攻击检测**：识别 O/0、1/l/I、5/S 等字符混淆（如 `goo0le.com`）
-- ✅ **品牌钓鱼检测**：检测冒充 PayPal、Amazon、Apple 等知名品牌的钓鱼网站
-- ✅ **短链接检测**：标记 bit.ly、tinyurl.com 等短链接服务
-- ✅ **钓鱼关键词检测**：识别包含 login、verify、secure 等敏感词的可疑 URL
-- ✅ **多重 @ 符号检测**：检测钓鱼网站常用的 URL 伪装手法
-- ✅ **恶意编码字符检测**：识别 %00、%0d、%0a 等可疑编码
-- ✅ **过多子域名检测**：标记域名层级过深的可疑网站
+#### Advanced Threat Detection
+- **Homoglyph Attack Detection**: Identifies character confusion patterns (O/0, 1/l/I, 5/S) like `goo0le.com`.
+- **Brand Phishing Detection**: Detects phishing sites impersonating well-known brands (PayPal, Amazon, Apple, etc.).
+- **Short Link Detection**: Flags URL shorteners (bit.ly, tinyurl.com, etc.) that may hide malicious destinations.
+- **Phishing Keyword Detection**: Identifies suspicious URLs containing words like login, verify, secure, etc.
+- **Multi-@ Symbol Detection**: Detects URL obfuscation techniques using multiple `@` characters.
+- **Malicious Encoded Character Detection**: Recognizes suspicious percent-encoded characters (%00, %0d, %0a, etc.).
+- **Excessive Subdomain Detection**: Flags URLs with an unusually deep subdomain structure.
 
-#### 三级风险分类
-- 🟢 **低风险 (Low)**：安全 URL，无警告
-- 🟡 **中风险 (Medium)**：可疑特征，显示警告并需要用户确认
-- 🔴 **高风险 (High)**：严重威胁，直接阻止自动跳转
+#### Three-Tier Risk Classification
+- **Low Risk**: Safe URLs — no warnings displayed.
+- **Medium Risk**: Suspicious characteristics — warning displayed with user confirmation required.
+- **High Risk**: Severe threats — auto-navigate is blocked immediately.
 
-#### 用户控制
-- **手动打开按钮**：即使自动跳转关闭，也可手动打开 URL
-- **可视化警告**：彩色警告卡片清晰展示所有风险点
-- **独立开关控制**：SCAN 和 FILE 标签页各自独立控制自动跳转
+#### User Controls
+- **Manual Open Button**: Open URLs manually even when auto-navigate is disabled.
+- **Visual Warnings**: Color-coded warning cards clearly display all risk factors.
+- **Independent Toggles**: SCAN and FILE tabs each have their own auto-navigate control.
 
 ------
 
-## 🛠 技术栈 (Tech Stack)
+## Tech Stack
 
-本项目基于 [Plasmo Framework](https://docs.plasmo.com/) 构建，使用了以下技术：
+Built on the [Plasmo Framework](https://docs.plasmo.com/):
 
-- **Core**: Plasmo (Chrome Extension V3 Manifest)
+- **Core**: Plasmo (Chrome Extension Manifest V3)
 - **UI Framework**: Vue 3 (Script Setup + Composition API)
-- **Styling**: 自定义 CSS (复古杂志风格)
+- **Styling**: Custom CSS (Retro Magazine aesthetic)
 - **Libraries**:
-  - `jsqr`: 用于二维码解码
-  - `qrcode.vue`: 用于二维码生成
-- **Architecture**: 组件化设计，代码复用率高
+  - `jsqr` — QR code decoding
+  - `qrcode.vue` — QR code generation
+- **Architecture**: Component-based design with high code reusability
 
 ------
 
-## 🚀 开发指南 (Getting Started)
+## Getting Started
 
-### 1. 安装依赖
+### 1. Install Dependencies
 
-首先，确保你安装了 Node.js 和包管理器（推荐 pnpm）。
+Make sure you have Node.js and a package manager installed (pnpm recommended).
 
 ```bash
 pnpm install
@@ -87,9 +89,9 @@ pnpm install
 npm install
 ```
 
-### 2. 启动开发服务器
+### 2. Start Dev Server
 
-运行开发命令，Plasmo 会监听文件变化并自动重新构建。
+Run the dev command — Plasmo will watch for file changes and rebuild automatically.
 
 ```bash
 pnpm dev
@@ -97,22 +99,22 @@ pnpm dev
 npm run dev
 ```
 
-> 如果遇到 `math-intrinsics` 相关报错，请将 `node_modules` 里对应包名的 `package.json` 中 `”main”: false` 删除或修改。
+> If you encounter a `math-intrinsics` related error, locate the package in `node_modules`, open its `package.json`, and remove or correct the `"main": false` entry.
 
-### 3. 加载到 Chrome
+### 3. Load into Chrome
 
-1. 打开 Chrome 浏览器，访问 `chrome://extensions/`。
-2. 开启右上角的 **”开发者模式” (Developer mode)**。
-3. 点击左上角的 **”加载已解压的扩展程序” (Load unpacked)**。
-4. 选择本项目下的 `build/chrome-mv3-dev` 文件夹。
+1. Open Chrome and navigate to `chrome://extensions/`.
+2. Enable **Developer mode** (top-right toggle).
+3. Click **Load unpacked** (top-left).
+4. Select the `build/chrome-mv3-dev` folder in this project.
 
-> **提示**：当你修改 `background.ts` 或 `manifest` 配置时，建议在扩展管理页面点击刷新按钮。修改 UI (`sidepanel.vue`) 通常会自动热更新。
+> **Tip**: After modifying `background.ts` or manifest configuration, reload the extension from the extensions management page. UI changes (`sidepanel.vue`) usually hot-reload automatically.
 
 ------
 
-## 📦 打包发布 (Production Build)
+## Production Build
 
-当你准备发布扩展时，运行以下命令生成生产环境包：
+When you're ready to publish, run:
 
 ```bash
 pnpm build
@@ -120,83 +122,86 @@ pnpm build
 npm run build
 ```
 
-构建完成后，`build/chrome-mv3-prod` 文件夹内的内容即为可发布到 Chrome Web Store 的最终产物（通常需要压缩为 .zip）。
+After building, the contents of `build/chrome-mv3-prod` are ready for the Chrome Web Store (typically packaged as a `.zip` file).
 
 ------
 
-## 📝 目录结构说明
+## Project Structure
 
 ```
 quick-qr/
-├── assets/                          # 静态资源（图标等）
-├── components/                      # Vue 组件
-│   └── sidepanel-result-section.vue # 结果展示组件（复用）
-├── contents/                        # Content Scripts
-│   └── content-overlay.vue          # 截图选区覆盖层
-├── lib/                            # 工具库
-│   └── generator.ts                # 二维码生成逻辑
-├── sidepanel.vue                   # 核心 UI（SCAN/FILE/MAKE）
-├── popup.vue                       # 弹出窗口
-├── background.ts                   # 后台服务（右键菜单等）
-└── README.md                       # 项目文档
+├── assets/                          # Static assets (icons, etc.)
+├── components/                      # Vue components
+│   └── sidepanel-result-section.vue # Reusable result display component
+├── contents/                        # Content scripts
+│   └── content-overlay.vue          # Screenshot selection overlay
+├── lib/                             # Utility libraries
+│   └── generator.ts                 # QR code generation logic
+├── sidepanel.vue                    # Core UI (SCAN / FILE / MAKE)
+├── popup.vue                        # Popup window
+├── background.ts                    # Background service worker (context menus, etc.)
+├── readme/                          # Multi-language docs
+│   ├── README_zh.md                # Simplified Chinese
+│   └── README_zh-TW.md             # Traditional Chinese
+└── README.md                        # Project documentation (English)
 ```
 
-### 核心文件说明
+### Key Files
 
-- **`sidepanel.vue`**: 主界面，包含三个标签页的逻辑、安全检查系统、自动跳转控制
-- **`components/sidepanel-result-section.vue`**: 结果展示组件，包含安全警告显示
-- **`background.ts`**: 后台服务脚本，处理右键菜单 (`contextMenus`) 事件
-- **`contents/content-overlay.vue`**: 注入页面的截图选区组件
+- **`sidepanel.vue`**: Main interface containing all three tabs, security check system, and auto-navigate controls.
+- **`components/sidepanel-result-section.vue`**: Reusable result panel with security warning display.
+- **`background.ts`**: Service worker handling right-click context menu events.
+- **`contents/content-overlay.vue`**: Screenshot selection overlay injected into the current page.
 
 ------
 
-## 🔒 安全特性详解
+## Security Details
 
-### 安全检查流程
+### Check Flow
 
-1. **扫描二维码** → 2. **解析 URL** → 3. **12 项安全检查** → 4. **风险评级** → 5. **用户决策**
+1. **Scan QR Code** → 2. **Parse URL** → 3. **12 Security Checks** → 4. **Risk Rating** → 5. **User Decision**
 
-### 示例场景
+### Example Scenarios
 
-**场景 1：正常网站**
+**Scenario 1: Safe Website**
 ```
 https://www.google.com
-→ ✅ 无警告，开关打开时直接跳转
+→ ✅ No warning — auto-navigates when toggle is on
 ```
 
-**场景 2：可疑网站**
+**Scenario 2: Suspicious Website**
 ```
 https://login-verify.suspicious-site.tk
-→ ⚠️ 显示警告：高风险 TLD + 钓鱼关键词
-→ 开关打开时弹出确认框
+→ ⚠️ Warning displayed: High-risk TLD + Phishing keywords
+→ Confirmation dialog shown when auto-navigate is on
 ```
 
-**场景 3：高危网站**
+**Scenario 3: Dangerous Website**
 ```
 https://paypal-secure.com
-→ 🚨 品牌钓鱼检测触发
-→ 直接阻止自动跳转，显示红色警告
+→ 🚨 Brand phishing detection triggered
+→ Auto-navigate blocked, red warning displayed
 ```
 
 ------
 
-## 🎨 设计理念
+## Design Philosophy
 
-QuickQR 采用**复古杂志风格 (Retro Magazine UI)**，灵感来源于 20 世纪中期的印刷杂志：
+QuickQR features a **Retro Magazine UI**, inspired by mid-20th century print publications:
 
-- **粗边框 + 阴影**：营造纸质印刷的立体感
-- **高对比度配色**：黄色主题 + 黑色边框
-- **字体排版**：大写字母 + 紧凑布局
-- **交互反馈**：按钮按下时的位移效果模拟实体按键
+- **Thick borders + shadows**: Creates a tactile, paper-print feel.
+- **High-contrast palette**: Yellow theme with bold black strokes.
+- **Typography**: Uppercase headings with dense, compact layout.
+- **Interaction feedback**: Button press animations simulate physical key presses.
 
 ------
 
-## 🤝 Credits
+## Credits
 
 Presented by **RoLingG & Gemini**.
 
 ---
 
-## 📄 License
+## License
 
-MIT License - 自由使用，欢迎贡献！
+MIT License — free to use and contribute.
