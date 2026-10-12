@@ -6,7 +6,7 @@
 
 **QuickQR** is a Chrome Sidepanel Extension with a distinctive retro magazine aesthetic. Designed as a "digital Swiss Army knife" for QR code processing, it combines a vintage editorial UI with powerful utility features and a built-in **intelligent security scanning system** to protect users from malicious QR codes.
 
-![qr3](https://rolingg.top/images/quickQR/qrGithub.png)
+![qr3](https://rolingg.top/images/quickQR/qrGithub.png?v=2)
 
 ## Features
 
